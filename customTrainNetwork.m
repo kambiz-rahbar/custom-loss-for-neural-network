@@ -50,6 +50,8 @@ iteration = 0;
 
 monitor.Status = "Running";
 
+best_net = net;
+best_validation_accuracy = 0;
 % Loop over epochs.
 while epoch < numEpochs && ~monitor.Stop
     epoch = epoch + 1;
@@ -88,6 +90,11 @@ while epoch < numEpochs && ~monitor.Stop
             recordMetrics(monitor,iteration, ...
                 ValidationLoss = Validation_loss, ...
                 ValidationAccuracy = Validation_accuracy);
+            
+            if best_validation_accuracy <= Validation_accuracy
+                best_net = net;
+                best_validation_accuracy = Validation_accuracy;
+            end
         end
 
         % update monitor
@@ -103,7 +110,7 @@ while epoch < numEpochs && ~monitor.Stop
             TrainingLoss = string(Training_loss), ...
             TrainingAccuracy = string(Training_accuracy), ...
             ValidationLoss = string(Validation_loss), ...
-            ValidationAccuracy = string(Validation_accuracy));
+            ValidationAccuracy = string(Validation_accuracy) + " (best: " + string(best_validation_accuracy) + ")");
 
         monitor.Progress = 100 * iteration/numIterations;
     end
@@ -114,3 +121,5 @@ if monitor.Stop == 1
 else
     monitor.Status = "Training complete";
 end
+
+net = best_net;

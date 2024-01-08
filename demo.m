@@ -1,8 +1,8 @@
-clc
+%clc
 clear
 close all
 
-imds = imageDatastore("/home/home/pylib/dataset/DigitsData/", IncludeSubfolders=true, LabelSource="foldernames");
+imds = imageDatastore("DigitsData/", IncludeSubfolders=true, LabelSource="foldernames");
 [imdsTrain,imdsValidation,imdsTest] = splitEachLabel(imds,0.7,0.15,"randomized");
 
 inputSize = [28 28 1];
@@ -28,10 +28,10 @@ layers = [
     softmaxLayer];
 
 %Train
-options.numEpochs = 10;
+options.numEpochs = 50;
 options.miniBatchSize = 128;
 options.initialLearnRate = 0.01;
-options.decay = 0;
+options.decay = 1e-5;
 options.momentum = 0.9;
 options.imdsValidation = imdsValidation;
 

@@ -1,6 +1,6 @@
 function [loss,gradients,state] = modelLoss(net,X,T)
     [Y,state] = forward(net,X);
-    loss1 = crossentropy(Y,T);
+    loss1 = 0.25*crossentropy(Y,T);
     loss2 = mse(Y,T);
 
     fmap = forward(net,X,"Outputs","relu_3");
@@ -21,9 +21,15 @@ function [loss,gradients,state] = modelLoss(net,X,T)
         end
     end
 
-    loss3 = 1/mean(center_dist,'all');
-    loss4 = sum(mean(s));
-    loss = loss1 + loss2 + 10*loss3 + loss4;
+    loss3 = 100*(1/mean(center_dist,'all')^2);
+    loss4 = 10*(std(mean(s)))^2;
+    loss5 = 0.005*(sum(mean(s)))^2;
+    
+    loss = loss1 + loss2 + loss3 + loss4 + loss5;
+    
+    figure(1); 
+    bar(double(string([loss1,loss2,loss3,loss4,loss5])));
+    title("loss variation per iteration");
 
     gradients = dlgradient(loss,net.Learnables);
 end
